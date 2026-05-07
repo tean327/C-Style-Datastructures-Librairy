@@ -99,8 +99,8 @@ char *PeekListString(StackListString **head);
 #pragma endregion
 #pragma region Array Based Stack
 void PushArrInt(StackArrInt *stack, int value);
-char *PopArrInt(StackArrInt *stack);
-char *PeekArrInt(StackArrInt *stack);
+int PopArrInt(StackArrInt *stack);
+int PeekArrInt(StackArrInt *stack);
 #pragma endregion
 #pragma endregion
 #endif
