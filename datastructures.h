@@ -88,9 +88,19 @@ void FreeListIntMemory(ListInt *head);
 
 #pragma region Stack Functions
 #pragma region List Based Stack
-void PushListInt(StackListInt *head, int value);
+// int stack funcs
+void PushListInt(StackListInt **head, int value);
+int PopListInt(StackListInt **head);
+int PeekListInt(StackListInt **head);
+// string stack funcs
+void PushListString(StackListString **head, char *value);
+char *PopListString(StackListString **head);
+char *PeekListString(StackListString **head);
 #pragma endregion
 #pragma region Array Based Stack
+void PushArrInt(StackArrInt *stack, int value);
+char *PopArrInt(StackArrInt *stack);
+char *PeekArrInt(StackArrInt *stack);
 #pragma endregion
 #pragma endregion
 #endif

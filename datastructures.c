@@ -225,14 +225,111 @@ void FreeListIntMemory(ListInt *head)
 
 #pragma region Stack Functions
 #pragma region List Based Stack
-void PushListInt(StackListInt *head, int value)
+void PushListInt(StackListInt **head, int value)
 {
     StackListInt *newNode = (StackListInt *)malloc(sizeof(StackListInt));
-    newNode->next = head;
+    newNode->next = *head;
     newNode->val = value;
-    head = newNode;
+    *head = newNode;
+}
+
+int PopListInt(StackListInt **head)
+{
+    StackListInt *popNode = (StackListInt *)malloc(sizeof(StackListInt));
+    popNode = *head;
+    while (popNode->next->next != NULL)
+    {
+        popNode = popNode->next;
+    }
+    int val = popNode->next->val;
+    free(popNode->next);
+    popNode->next = NULL;
+    return val;
+}
+
+int PeekListInt(StackListInt **head)
+{
+    StackListInt *popNode = (StackListInt *)malloc(sizeof(StackListInt));
+    popNode = *head;
+    while (popNode->next != NULL)
+    {
+        popNode = popNode->next;
+    }
+    return popNode->val;
+}
+
+void PushListString(StackListString **head, char *value)
+{
+    StackListString *newNode = (StackListString *)malloc(sizeof(StackListString));
+    newNode->next = *head;
+    strcpy(newNode->val, value);
+    *head = newNode;
+}
+
+char *PopListString(StackListString **head)
+{
+    StackListString *popNode = (StackListString *)malloc(sizeof(StackListString));
+    popNode = *head;
+    while (popNode->next->next != NULL)
+    {
+        popNode = popNode->next;
+    }
+    char *val;
+    strcpy(val, popNode->next->val);
+    free(popNode->next);
+    popNode->next = NULL;
+    return val;
+}
+
+char *PeekListString(StackListString **head)
+{
+    StackListString *peekNode = (StackListString *)malloc(sizeof(StackListString));
+    peekNode = *head;
+    while (peekNode->next != NULL)
+    {
+        peekNode = peekNode->next;
+    }
+    return *&peekNode->val;
 }
 #pragma endregion
 #pragma region Array Based Stack
+void PushArrInt(StackArrInt *stack, int value)
+{
+    if (stack->indexOfTop + 1 <= 50)
+        stack->array[++stack->indexOfTop] = value;
+}
+
+int PopArrInt(StackArrInt *stack)
+{
+    int val = stack->array[stack->indexOfTop];
+    stack->array[stack->indexOfTop] = (int)NULL;
+    stack->indexOfTop--;
+    return val;
+}
+
+int PeekArrInt(StackArrInt *stack)
+{
+    return stack->array[stack->indexOfTop];
+}
+
+void PushArrString(StackArrString *stack, char *value)
+{
+    if (stack->indexOfTop + 1 <= 50)
+        strcpy(stack->array[++stack->indexOfTop], value);
+}
+
+int PopArrInt(StackArrString *stack)
+{
+    char *val;
+    strcpy(stack->array[stack->indexOfTop], val);
+    stack->array[stack->indexOfTop] = (int)NULL;
+    stack->indexOfTop--;
+    return val;
+}
+
+int PeekArrInt(StackArrString *stack)
+{
+    return stack->array[stack->indexOfTop];
+}
 #pragma endregion
 #pragma endregion
