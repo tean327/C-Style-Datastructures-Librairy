@@ -98,9 +98,14 @@ char *PopListString(StackListString **head);
 char *PeekListString(StackListString **head);
 #pragma endregion
 #pragma region Array Based Stack
+// string stack funcs
 void PushArrInt(StackArrInt *stack, int value);
 int PopArrInt(StackArrInt *stack);
 int PeekArrInt(StackArrInt *stack);
+// int stack funcs
+void PushArrString(StackArrString *stack, char *value);
+char *PopArrString(StackArrString *stack);
+char *PeekArrString(StackArrString *stack);
 #pragma endregion
 #pragma endregion
 #endif

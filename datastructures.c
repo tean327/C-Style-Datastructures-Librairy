@@ -318,16 +318,16 @@ void PushArrString(StackArrString *stack, char *value)
         strcpy(stack->array[++stack->indexOfTop], value);
 }
 
-int PopArrInt(StackArrString *stack)
+char *PopArrString(StackArrString *stack)
 {
     char *val;
     strcpy(stack->array[stack->indexOfTop], val);
-    stack->array[stack->indexOfTop] = (int)NULL;
+    stack->array[stack->indexOfTop] = (char *)NULL;
     stack->indexOfTop--;
     return val;
 }
 
-int PeekArrInt(StackArrString *stack)
+char *PeekArrString(StackArrString *stack)
 {
     return stack->array[stack->indexOfTop];
 }
