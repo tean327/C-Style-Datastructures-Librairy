@@ -14,11 +14,11 @@ For now I have:
       - Get a list node from a given value
       - Free list memory
         
--Stacks(int and str)
+ -Stacks(int and str)
       - Push
       - Pop
       - Peek
    
--Queues(int and str)
+ -Queues(int and str)
       - Enqueue
       - Dequeue
