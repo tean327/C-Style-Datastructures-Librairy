@@ -98,14 +98,34 @@ char *PopListString(StackListString **head);
 char *PeekListString(StackListString **head);
 #pragma endregion
 #pragma region Array Based Stack
-// string stack funcs
+// int stack funcs
 void PushArrInt(StackArrInt *stack, int value);
 int PopArrInt(StackArrInt *stack);
 int PeekArrInt(StackArrInt *stack);
-// int stack funcs
+// string stack funcs
 void PushArrString(StackArrString *stack, char *value);
 char *PopArrString(StackArrString *stack);
 char *PeekArrString(StackArrString *stack);
 #pragma endregion
 #pragma endregion
+
+#pragma region Queues Functions
+#pragma region Array Based
+// string Queus Funcs
+void EnqueueArrStr(QueueStringArr *queue, char *value);
+char *DequeueArrStr(QueueStringArr *queue);
+// Int queues Funcs
+void EnqueueArrInt(QueueIntArr *queue, int value);
+int DequeueArrInt(QueueIntArr *queue);
+#pragma endregion
+#pragma region List Based
+// string Queus Funcs
+void EnqueueListStr();
+void DequeueListStr();
+// Int queues Funcs
+void EnqueueListInt();
+void DequeueListInt();
+#pragma endregion
+#pragma endregion
+
 #endif

@@ -333,3 +333,72 @@ char *PeekArrString(StackArrString *stack)
 }
 #pragma endregion
 #pragma endregion
+
+#pragma region Queues Functions
+#pragma region Array Based
+// string Queus Funcs
+void EnqueueArrStr(QueueStringArr *queue, char *value)
+{
+    if (queue->size == (int)NULL)
+    {
+        queue->size = -1;
+        queue->frontIndex = 0;
+    }
+    if (queue->size + 1 <= 50)
+    {
+        queue->array[++queue->size] = (char *)malloc(sizeof(char *) * strlen(value));
+        strcpy(queue->array[queue->size], value);
+    }
+}
+char *DequeueArrStr(QueueStringArr *queue)
+{
+    char *val = (char *)malloc(sizeof(char) * 25);
+    strcpy(val, queue->array[queue->frontIndex]);
+    for (int i = 0; i < queue->size - 1; i++)
+    {
+        strcpy(queue->array[i], queue->array[i + 1]);
+    }
+    queue->size--;
+    return val;
+}
+// Int queues Funcs
+void EnqueueArrInt(QueueIntArr *queue, int value)
+{
+    if (queue->size == (int)NULL)
+    {
+        queue->size = -1;
+        queue->frontIndex = 0;
+    }
+    if (queue->size + 1 <= 50)
+    {
+        queue->array[++queue->size] = value;
+    }
+}
+int DequeueArrInt(QueueIntArr *queue)
+{
+    int val = queue->array[queue->frontIndex];
+    for (int i = 0; i < queue->size - 1; i++)
+    {
+        queue->array[i] = queue->array[i + 1];
+    }
+    queue->size--;
+    return val;
+}
+#pragma endregion
+#pragma region List Based
+// string Queus Funcs
+void EnqueueListStr()
+{
+}
+void DequeueListStr()
+{
+}
+// Int queues Funcs
+void EnqueueListInt()
+{
+}
+void DequeueListInt()
+{
+}
+#pragma endregion
+#pragma endregion
