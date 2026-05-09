@@ -15,10 +15,10 @@ For now I have:
       - Free list memory
         
  -Stacks(int and str)
-      - Push
-      - Pop
-      - Peek
+   - Push
+   - Pop
+   - Peek
    
  -Queues(int and str)
-      - Enqueue
-      - Dequeue
+   - Enqueue
+   - Dequeue
