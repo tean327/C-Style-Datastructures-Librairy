@@ -72,6 +72,42 @@ typedef struct list_queue_string
 } QueueStringList;
 
 #pragma endregion
+#pragma region Tree
+typedef struct tree_string
+{
+    char *val;
+    struct tree_string *left;
+    struct tree_string *right;
+} TreeString;
+
+typedef struct tree_int
+{
+    int val;
+    struct tree_int *left;
+    struct tree_int *right;
+} TreeInt;
+#pragma endregion
+
+#pragma region HashTables
+typedef struct NodeItem
+{
+    int key;
+    char *data;
+} Item;
+
+typedef struct listHashItem
+{
+    Item *value;
+    struct listHashItem *next;
+} ListItem;
+
+typedef struct NodeHashTable
+{
+    ListItem **hashData;
+    int size;
+    int count;
+} HashTable;
+#pragma endregion
 
 #pragma region List Functions
 // string List functions
@@ -120,12 +156,24 @@ int DequeueArrInt(QueueIntArr *queue);
 #pragma endregion
 #pragma region List Based
 // string Queus Funcs
-void EnqueueListStr();
-void DequeueListStr();
+void EnqueueListStr(QueueStringList *head, char *value);
+QueueStringList *DequeueListStr(QueueStringList *head);
 // Int queues Funcs
 void EnqueueListInt();
 void DequeueListInt();
 #pragma endregion
+
+#pragma region HashTable
+HashTable *CreateHashTable(int tableSize);
+void DestroyHashTable(HashTable *table);
+unsigned int hash(char *str, int hashSize);
+void InsertIntoHashTable(char *str, HashTable *table);
+void AddAtEndOfListItem(Item *value, ListItem *head);
+ListItem *GetListItemNodeFromValue(ListItem *head, char *value, int key);
+void FreeListItemMemory(ListItem *head);
+ListItem *GetItemInsideTable(HashTable *table, char *str);
+#pragma endregion
+
 #pragma endregion
 
 #endif
