@@ -16,6 +16,12 @@ typedef struct list_int_stack
     struct list_int_stack *next;
 } StackListInt;
 
+typedef struct valueInt
+{
+    int val;
+    int state; /* 0 == ok else not ok*/
+} ReturnIntValue;
+
 typedef struct array_string_stack
 {
     char *array[50];
@@ -27,19 +33,27 @@ typedef struct list_string_stack
     char *val;
     struct list_string_stack *next;
 } StackListString;
+
+typedef struct valueStr
+{
+    int val;
+    int state; /* 0 == ok else not ok*/
+} ReturnStrValue;
 #pragma endregion
 
 #pragma region Stack Functions
 #pragma region List Based Stack
 // int stack funcs
+StackListInt *CreateIntStack();
 void PushListInt(StackListInt **head, int value);
-int PopListInt(StackListInt **head);
-int PeekListInt(StackListInt **head);
+ReturnIntValue PopListInt(StackListInt **head);
+ReturnIntValue PeekListInt(StackListInt **head);
 void DestroyStackListInt(StackListInt *head);
 // string stack funcs
+StackListString *CreateStringStack();
 void PushListString(StackListString **head, char *value);
-char *PopListString(StackListString **head);
-char *PeekListString(StackListString *head);
+ReturnStrValue PopListString(StackListString **head);
+ReturnStrValue PeekListString(StackListString *head);
 void DestroyStackListString(StackListString *head);
 #pragma endregion
 #pragma region Array Based Stack

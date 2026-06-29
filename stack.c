@@ -18,6 +18,12 @@ typedef struct list_int_stack
     struct list_int_stack *next;
 } StackListInt;
 
+typedef struct valueInt
+{
+    int val;
+    int state; /* 0 == ok else not ok*/
+} ReturnIntValue;
+
 typedef struct array_string_stack
 {
     char *array[ARR_SIZE];
@@ -29,106 +35,162 @@ typedef struct list_string_stack
     char *val;
     struct list_string_stack *next;
 } StackListString;
+
+typedef struct valueStr
+{
+    int val;
+    int state; /* 0 == ok else not ok*/
+} ReturnStrValue;
 #pragma endregion
 
 #pragma region Stack Functions
 #pragma region List Based Stack
-void PushListInt(StackListInt **head, int value)
+
+StackListInt *CreateintStack()
+{
+    StackListInt *head = (StackListInt *)malloc(sizeof(StackListInt));
+    if (!head)
+    {
+        printf("Unabled to allocate memory");
+        return NULL;
+    }
+    head->next = NULL;
+    return head;
+}
+
+void PushListInt(StackListInt *head, int value)
 {
     StackListInt *newNode = (StackListInt *)malloc(sizeof(StackListInt));
-    newNode->next = *head;
+    if (!newNode)
+    {
+        printf("Unabled to allocate memory");
+        return;
+    }
+    if (head->next)
+        newNode->next = head->next;
+    else
+        newNode->next = NULL;
+    head->next = newNode;
     newNode->val = value;
-    *head = newNode;
 }
 
-int PopListInt(StackListInt **head)
+ReturnIntValue PopListInt(StackListInt *head)
 {
-    StackListInt *popNode = *head;
-    while (popNode->next != NULL)
+    if (!head->next)
     {
-        popNode = popNode->next;
+        return (ReturnIntValue){
+            0 /*value*/,
+            1 /*state*/
+        };
     }
-    int val = popNode->next->val;
-    free(popNode->next);
-    popNode->next = NULL;
-    return val;
+    StackListInt *popNode = head->next;
+    int val = popNode->val;
+    head->next = head->next->next;
+    free(popNode);
+    return (ReturnIntValue){
+        val /*value*/,
+        0 /*state*/
+    };
 }
 
-int PeekListInt(StackListInt **head)
+ReturnIntValue PeekListInt(StackListInt *head)
 {
-    StackListInt *popNode = *head;
-    while (popNode->next != NULL)
-    {
-        popNode = popNode->next;
-    }
-    return popNode->val;
+    if (head->next)
+        return (ReturnIntValue){
+            head->next->val /*value*/,
+            0 /*state*/
+        };
+
+    return (ReturnIntValue){
+        0 /*value*/,
+        1 /*state*/
+    };
 }
 
-void PushListString(StackListString **head, char *value)
+void DestroyStack(StackListInt *head)
+{
+    StackListInt *current = head;
+    while (current != NULL)
+    {
+        StackListInt *tmp = current;
+        current = current->next;
+        free(tmp);
+    }
+}
+
+StackListString *CreateStringStack()
+{
+    StackListString *head = (StackListString *)malloc(sizeof(StackListString));
+    if (!head)
+    {
+        printf("Unabled to allocate memory");
+        return NULL;
+    }
+    head->next = NULL;
+    return head;
+}
+
+void PushListString(StackListString *head, char *value)
 {
     StackListString *newNode = (StackListString *)malloc(sizeof(StackListString));
-    newNode->next = *head;
-    newNode->val = (char *)malloc(sizeof(char) * (strlen(value) + 1));
-    if (!newNode->val)
+    if (!newNode)
     {
-        printf("Unabled to allocate memory to push\n");
-        exit(1);
+        printf("Unabled to allocate memory");
+        return;
     }
-    strcpy(newNode->val, value);
-    *head = newNode;
+    if (head->next)
+        newNode->next = head->next;
+    else
+        newNode->next = NULL;
+    head->next = newNode;
+    newNode->val = strdup(value);
 }
 
-char *PopListString(StackListString **head)
+ReturnStrValue PopListInt(StackListString *head)
 {
-    StackListString *popNode = *head;
-    while (popNode->next != NULL)
+    if (!head->next)
     {
-        popNode = popNode->next;
+        return (ReturnStrValue){
+            0 /*value*/,
+            1 /*state*/
+        };
     }
-    char *val = (char *)malloc(sizeof(char) * (strlen(popNode->next->val) + 1));
-    if (!val)
-    {
-        printf("Unabled to allocate memory to pop\n");
-        exit(1);
-    }
-    strcpy(val, popNode->next->val);
-    free(popNode->next);
-    popNode->next = NULL;
-    return val;
+    StackListString *popNode = head->next;
+    int val = popNode->val;
+    head->next = head->next->next;
+    free(popNode);
+    return (ReturnStrValue){
+        val /*value*/,
+        0 /*state*/
+    };
 }
 
-char *PeekListString(StackListString *head)
+ReturnStrValue PeekListInt(StackListString *head)
 {
-    StackListString *peekNode = head;
-    while (peekNode->next != NULL)
-    {
-        peekNode = peekNode->next;
-    }
-    return peekNode->val;
+    if (head->next)
+        return (ReturnStrValue){
+            head->next->val /*value*/,
+            0 /*state*/
+        };
+
+    return (ReturnStrValue){
+        0 /*value*/,
+        1 /*state*/
+    };
 }
 
 void DestroyStackListString(StackListString *head)
 {
-    StackListString *tmp = head;
-    while (head != NULL)
+    StackListString *current = head;
+    while (current != NULL)
     {
-        tmp = head;
-        head = head->next;
+        StackListString *tmp = current;
+        current = current->next;
         free(tmp->val);
         free(tmp);
     }
 }
 
-void DestroyStackListInt(StackListInt *head)
-{
-    StackListInt *tmp = head;
-    while (head != NULL)
-    {
-        tmp = head;
-        head = head->next;
-        free(tmp);
-    }
-}
 #pragma endregion
 #pragma region Array Based Stack
 void PushArrInt(StackArrInt *stack, int value)
