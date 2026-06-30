@@ -2,6 +2,74 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DEFINE_LIST(type)                                                              \
+    typedef struct type##_list_node                                                    \
+    {                                                                                  \
+        type VALUE;                                                                    \
+        (void *)destroy;                                                               \
+        type##_list_node *next;                                                        \
+    } type##ListNode;                                                                  \
+                                                                                       \
+    type##ListNode *CreateList((void *)destroyFunc)                                    \
+    {                                                                                  \
+        type##_list_node *head = (type##_list_node *)malloc(sizeof(type##_list_node)); \
+        head->next = NULL;                                                             \
+        head->destroy = destroyFunc;                                                   \
+        return head;                                                                   \
+    }                                                                                  \
+                                                                                       \
+    /*If type is a string you need to pass strdup(value) as parameter*/                \
+    void AddAtEndOfListtype##(type * value, type##ListNode * head)                     \
+    {                                                                                  \
+        type##ListNode *newNode = (type##ListNode *)malloc(sizeof(type##ListNode));    \
+        if (newNode == NULL)                                                           \
+        {                                                                              \
+            printf("Unable to allocate memory for new node\n");                        \
+            exit(1);                                                                   \
+        }                                                                              \
+        newNode->VALUE = value;                                                        \
+        newNode->next = NULL;                                                          \
+                                                                                       \
+        if (head->next == NULL)                                                        \
+        {                                                                              \
+            head->next = newNode;                                                      \
+        }                                                                              \
+        else                                                                           \
+        {                                                                              \
+            type##ListNode *current = head->next;                                      \
+            while (current->next != NULL)                                              \
+            {                                                                          \
+                current = current->next;                                               \
+            }                                                                          \
+            current->next = newNode;                                                   \
+        }                                                                              \
+    }                                                                                  \
+    type##ListNode *GetListCharNodeFromValue(type##ListNode *head, char *value)        \
+    {                                                                                  \
+        type##ListNode *searchNode = head->next;                                       \
+        while (searchNode != NULL)                                                     \
+        {                                                                              \
+            if (strcmp(searchNode->VALUE, value) == 0)                                 \
+            {                                                                          \
+                return searchNode;                                                     \
+            }                                                                          \
+            searchNode = searchNode->next;                                             \
+        }                                                                              \
+        return NULL;                                                                   \
+    }                                                                                  \
+    void FreeListCharMemory(type##ListNode *head)                                      \
+    {                                                                                  \
+        type##ListNode *tmp;                                                           \
+        while (head != NULL)                                                           \
+        {                                                                              \
+            tmp = head;                                                                \
+            head = head->next;                                                         \
+            if (tmp->destroy)                                                          \
+                tmp->destroy(tmp->VALUE);                                              \
+            free(tmp);                                                                 \
+        }                                                                              \
+    }
+
 #pragma region Structs
 typedef struct ListIntNode
 {

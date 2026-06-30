@@ -98,6 +98,16 @@ int DequeueArrInt(QueueIntArr *queue)
 #pragma endregion
 #pragma region List Based
 // string Queus Funcs
+
+QueueStringList *CreateQueueString()
+{
+    QueueStringList *q = malloc(sizeof(QueueStringList));
+    q->next = NULL;
+    q->previous = NULL;
+    q->tail = NULL;
+    return q;
+}
+
 void EnqueueListStr(QueueStringList *head, char *value)
 {
     QueueStringList *newNode = (QueueStringList *)malloc(sizeof(QueueStringList));
@@ -161,6 +171,16 @@ void DestroyQueueListString(QueueStringList *head)
 }
 
 // Int queues Funcs
+
+QueueIntList *CreateQueueInt()
+{
+    QueueIntList *q = malloc(sizeof(QueueIntList));
+    q->next = NULL;
+    q->previous = NULL;
+    q->tail = NULL;
+    return q;
+}
+
 void EnqueueListInt(QueueIntList *head, int value)
 {
     QueueIntList *newNode = (QueueIntList *)malloc(sizeof(QueueIntList));
@@ -174,6 +194,7 @@ void EnqueueListInt(QueueIntList *head, int value)
 
     if (head->next == NULL)
     {
+        printf("%d\n", value);
         head->next = newNode;
         newNode->previous = NULL;
         head->tail = newNode;
@@ -184,6 +205,7 @@ void EnqueueListInt(QueueIntList *head, int value)
     head->tail = newNode;
     tmp->next = newNode;
     newNode->previous = tmp;
+    printf("%d\n", newNode->val);
 }
 int DequeueListInt(QueueIntList *head)
 {

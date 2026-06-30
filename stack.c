@@ -38,7 +38,7 @@ typedef struct list_string_stack
 
 typedef struct valueStr
 {
-    int val;
+    char *val;
     int state; /* 0 == ok else not ok*/
 } ReturnStrValue;
 #pragma endregion
@@ -127,6 +127,7 @@ StackListString *CreateStringStack()
         return NULL;
     }
     head->next = NULL;
+    head->val = NULL;
     return head;
 }
 
@@ -146,18 +147,20 @@ void PushListString(StackListString *head, char *value)
     newNode->val = strdup(value);
 }
 
-ReturnStrValue PopListInt(StackListString *head)
+ReturnStrValue PopListString(StackListString *head)
 {
     if (!head->next)
     {
         return (ReturnStrValue){
-            0 /*value*/,
+            NULL /*value*/,
             1 /*state*/
         };
     }
     StackListString *popNode = head->next;
-    int val = popNode->val;
+    char *val = strdup(popNode->val);
     head->next = head->next->next;
+
+    free(popNode->val);
     free(popNode);
     return (ReturnStrValue){
         val /*value*/,
@@ -165,16 +168,16 @@ ReturnStrValue PopListInt(StackListString *head)
     };
 }
 
-ReturnStrValue PeekListInt(StackListString *head)
+ReturnStrValue PeekListString(StackListString *head)
 {
     if (head->next)
         return (ReturnStrValue){
-            head->next->val /*value*/,
+            strdup(head->next->val) /*value*/,
             0 /*state*/
         };
 
     return (ReturnStrValue){
-        0 /*value*/,
+        NULL /*value*/,
         1 /*state*/
     };
 }
