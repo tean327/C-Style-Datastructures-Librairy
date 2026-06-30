@@ -22,6 +22,7 @@ typedef struct list_queue_int
     int val;
     struct list_queue_int *previous;
     struct list_queue_int *next;
+    struct list_queue_int *tail;
 } QueueIntList;
 
 typedef struct list_queue_string
@@ -29,6 +30,7 @@ typedef struct list_queue_string
     char *val;
     struct list_queue_string *previous;
     struct list_queue_string *next;
+    struct list_queue_string *tail;
 } QueueStringList;
 
 #pragma endregion
@@ -117,14 +119,13 @@ void EnqueueListStr(QueueStringList *head, char *value)
     if (head->next == NULL)
     {
         head->next = newNode;
+        newNode->previous = NULL;
+        head->tail = newNode;
         return;
     }
 
-    QueueStringList *tmp = head->next;
-    while (tmp->next != NULL)
-    {
-        tmp = tmp->next;
-    }
+    QueueStringList *tmp = head->tail;
+    head->tail = newNode;
     tmp->next = newNode;
     newNode->previous = tmp;
 }
@@ -132,14 +133,33 @@ void EnqueueListStr(QueueStringList *head, char *value)
 char *DequeueListStr(QueueStringList *head)
 {
     QueueStringList *tmp = head->next;
-
     head->next = tmp->next;
-    head->next->previous = NULL;
+    if (head->next)
+        head->next->previous = NULL;
+    else
+        head->tail = NULL;
     char *val = strdup(tmp->val);
-    free(tmp->val);
     free(tmp);
     return val;
 }
+
+int IsQueueStringEmpty(QueueStringList *head)
+{
+    return head->next == NULL;
+}
+
+void DestroyQueueListString(QueueStringList *head)
+{
+    QueueStringList *tmp = head;
+    while (head != NULL)
+    {
+        tmp = head;
+        head = head->next;
+        free(tmp->val);
+        free(tmp);
+    }
+}
+
 // Int queues Funcs
 void EnqueueListInt(QueueIntList *head, int value)
 {
@@ -155,38 +175,32 @@ void EnqueueListInt(QueueIntList *head, int value)
     if (head->next == NULL)
     {
         head->next = newNode;
+        newNode->previous = NULL;
+        head->tail = newNode;
         return;
     }
 
-    QueueIntList *tmp = head->next;
-    while (tmp->next != NULL)
-    {
-        tmp = tmp->next;
-    }
+    QueueIntList *tmp = head->tail;
+    head->tail = newNode;
     tmp->next = newNode;
     newNode->previous = tmp;
 }
 int DequeueListInt(QueueIntList *head)
 {
     QueueIntList *tmp = head->next;
-
     head->next = tmp->next;
-    head->next->previous = NULL;
+    if (head->next)
+        head->next->previous = NULL;
+    else
+        head->tail = NULL;
     int val = tmp->val;
     free(tmp);
     return val;
 }
 
-void DestroyQueueListString(QueueStringList *head)
+int IsQueueIntEmpty(QueueIntList *head)
 {
-    QueueStringList *tmp = head;
-    while (head != NULL)
-    {
-        tmp = head;
-        head = head->next;
-        free(tmp->val);
-        free(tmp);
-    }
+    return head->next == NULL;
 }
 
 void DestroyQueueListInt(QueueIntList *head)

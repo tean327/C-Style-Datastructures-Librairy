@@ -21,6 +21,7 @@ typedef struct list_queue_int
     int val;
     struct list_queue_int *previous;
     struct list_queue_int *next;
+    struct list_queue_int *tail;
 } QueueIntList;
 
 typedef struct list_queue_string
@@ -28,6 +29,7 @@ typedef struct list_queue_string
     char *val;
     struct list_queue_string *previous;
     struct list_queue_string *next;
+    struct list_queue_string *tail;
 } QueueStringList;
 
 #pragma endregion
@@ -46,9 +48,11 @@ int DequeueArrInt(QueueIntArr *queue);
 void EnqueueListStr(QueueStringList *head, char *value);
 QueueStringList *DequeueListStr(QueueStringList *head);
 void DestroyQueueListString(QueueStringList *head);
+int IsQueueStringEmpty(QueueStringList *head);
 // Int queues Funcs
 void EnqueueListInt(QueueIntList *head, int value);
 QueueIntList *DequeueListInt(QueueIntList *head);
 void DestroyQueueListInt(QueueIntList *head);
+int IsQueueIntEmpty(QueueIntList *head);
 #pragma endregion
 #endif
