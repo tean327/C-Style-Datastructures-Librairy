@@ -89,7 +89,7 @@
             /*ici test de "l'existence" de la fonction destroy si elle est pas null                                                \
              cela veut dire que  et VALUE doit etre free et donc on doit appelé destroy*/                                         \
             if (tmp->destroy)                                                                                                      \
-                tmp->destroy(tmp->VALUE);                                                                                          \
+                tmp->destroy((void *)tmp->VALUE);                                                                                  \
             free(tmp);                                                                                                             \
         }                                                                                                                          \
     }

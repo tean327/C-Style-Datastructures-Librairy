@@ -233,3 +233,10 @@ void FreeListIntMemory(ListInt *head)
         free(tmp);
     }
 }
+
+/* besoin de passer par une fonction auxillaire pour strcmp car elle prend des paramètres de types cont char* et nn char*
+ de cette manière on peut garder la mutabilité des char* avec la comparaison*/
+int CompareStr(char *a, char *b)
+{
+    return strcmp(a, b);
+}
