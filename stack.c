@@ -21,7 +21,7 @@ typedef struct list_int_stack
 typedef struct valueInt
 {
     int val;
-    int state; /* 0 == ok else not ok*/
+    int state; /* 0 == not ok else ok*/
 } ReturnIntValue;
 
 typedef struct array_string_stack
@@ -39,7 +39,7 @@ typedef struct list_string_stack
 typedef struct valueStr
 {
     char *val;
-    int state; /* 0 == ok else not ok*/
+    int state; /* 0 == not ok else ok*/
 } ReturnStrValue;
 #pragma endregion
 
@@ -80,7 +80,7 @@ ReturnIntValue PopListInt(StackListInt *head)
     {
         return (ReturnIntValue){
             0 /*value*/,
-            1 /*state*/
+            0 /*state*/
         };
     }
     StackListInt *popNode = head->next;
@@ -89,7 +89,7 @@ ReturnIntValue PopListInt(StackListInt *head)
     free(popNode);
     return (ReturnIntValue){
         val /*value*/,
-        0 /*state*/
+        1 /*state*/
     };
 }
 
@@ -98,12 +98,12 @@ ReturnIntValue PeekListInt(StackListInt *head)
     if (head->next)
         return (ReturnIntValue){
             head->next->val /*value*/,
-            0 /*state*/
+            1 /*state*/
         };
 
     return (ReturnIntValue){
         0 /*value*/,
-        1 /*state*/
+        0 /*state*/
     };
 }
 
@@ -153,7 +153,7 @@ ReturnStrValue PopListString(StackListString *head)
     {
         return (ReturnStrValue){
             NULL /*value*/,
-            1 /*state*/
+            0 /*state*/
         };
     }
     StackListString *popNode = head->next;
@@ -164,7 +164,7 @@ ReturnStrValue PopListString(StackListString *head)
     free(popNode);
     return (ReturnStrValue){
         val /*value*/,
-        0 /*state*/
+        1 /*state*/
     };
 }
 
@@ -173,12 +173,12 @@ ReturnStrValue PeekListString(StackListString *head)
     if (head->next)
         return (ReturnStrValue){
             strdup(head->next->val) /*value*/,
-            0 /*state*/
+            1 /*state*/
         };
 
     return (ReturnStrValue){
         NULL /*value*/,
-        1 /*state*/
+        0 /*state*/
     };
 }
 
