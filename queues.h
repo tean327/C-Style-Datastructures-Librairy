@@ -32,28 +32,42 @@ typedef struct list_queue_string
     struct list_queue_string *tail;
 } QueueStringList;
 
+typedef struct valueInt
+{
+    int val;
+    int state; /* 0 == ok else not ok*/
+} ReturnIntValue;
+
+typedef struct valueStr
+{
+    char *val;
+    int state; /* 0 == ok else not ok*/
+} ReturnStrValue;
+
 #pragma endregion
 
 #pragma region Queues Functions
 #pragma region Array Based
 // string Queus Funcs
+QueueStringArr *CreateQueueStringArr();
 void EnqueueArrStr(QueueStringArr *queue, char *value);
-char *DequeueArrStr(QueueStringArr *queue);
+ReturnStrValue DequeueArrStr(QueueStringArr *queue);
 // Int queues Funcs
+QueueIntArr *CreateQueueIntArr();
 void EnqueueArrInt(QueueIntArr *queue, int value);
-int DequeueArrInt(QueueIntArr *queue);
+ReturnIntValue DequeueArrInt(QueueIntArr *queue);
 #pragma endregion
 #pragma region List Based
 // string Queus Funcs
 QueueStringList *CreateQueueString();
 void EnqueueListStr(QueueStringList *head, char *value);
-QueueStringList *DequeueListStr(QueueStringList *head);
+ReturnStrValue DequeueListStr(QueueStringList *head);
 void DestroyQueueListString(QueueStringList *head);
 int IsQueueStringEmpty(QueueStringList *head);
 // Int queues Funcs
 QueueIntList *CreateQueueInt();
 void EnqueueListInt(QueueIntList *head, int value);
-QueueIntList *DequeueListInt(QueueIntList *head);
+ReturnIntValue DequeueListInt(QueueIntList *head);
 void DestroyQueueListInt(QueueIntList *head);
 int IsQueueIntEmpty(QueueIntList *head);
 #pragma endregion

@@ -33,16 +33,42 @@ typedef struct list_queue_string
     struct list_queue_string *tail;
 } QueueStringList;
 
+typedef struct valueInt
+{
+    int val;
+    int state; /* 0 == ok else not ok*/
+} ReturnIntValue;
+
+typedef struct valueStr
+{
+    char *val;
+    int state; /* 0 == ok else not ok*/
+} ReturnStrValue;
+
 #pragma endregion
 
 #pragma region Queues Functions
 #pragma region Array Based
 // string Queus Funcs
+
+QueueStringArr *CreateQueueStringArr()
+{
+    QueueStringArr *queue = (QueueStringArr *)malloc(sizeof(QueueStringArr));
+    if (!queue)
+    {
+        printf("Unabled to allocate memory for queue string arr\n");
+        return NULL;
+    }
+    queue->frontIndex = -1;
+    queue->size = -1;
+    return queue;
+}
+
 void EnqueueArrStr(QueueStringArr *queue, char *value)
 {
     if (queue->size < 0)
     {
-        queue->size = 0;
+        queue->size = -1;
         queue->frontIndex = 0;
     }
     if (queue->size + 1 < 50)
@@ -56,23 +82,53 @@ void EnqueueArrStr(QueueStringArr *queue, char *value)
         strcpy(queue->array[queue->size], value);
     }
 }
-char *DequeueArrStr(QueueStringArr *queue)
+ReturnStrValue DequeueArrStr(QueueStringArr *queue)
 {
+    if (queue->size < 0)
+    {
+        return (ReturnStrValue){
+            NULL, /*value*/
+            0     /*state*/
+        };
+    }
     char *val = (char *)malloc(sizeof(char) * (strlen(queue->array[queue->frontIndex]) + 1));
     if (!val)
     {
         printf("Unabled to allocate memory\n");
-        exit(1);
+        return (ReturnStrValue){
+            NULL, /*value*/
+            0     /*state*/
+        };
     }
+
     strcpy(val, queue->array[queue->frontIndex]);
-    for (int i = 0; i < queue->size - 1; i++)
+
+    for (int i = 0; i < queue->size; i++)
     {
+        printf("Iteration n°%d, i: %s, i+1: %s\n", i, queue->array[i], queue->array[i + 1]);
         strcpy(queue->array[i], queue->array[i + 1]);
     }
     queue->size--;
-    return val;
+    return (ReturnStrValue){
+        val, /*value*/
+        1    /*state*/
+    };
 }
+
 // Int queues Funcs
+QueueIntArr *CreateQueueIntArr()
+{
+    QueueIntArr *queue = (QueueIntArr *)malloc(sizeof(QueueIntArr));
+    if (!queue)
+    {
+        printf("Unabled to allocate memory for queue int arr\n");
+        return NULL;
+    }
+    queue->frontIndex = -1;
+    queue->size = -1;
+    return queue;
+}
+
 void EnqueueArrInt(QueueIntArr *queue, int value)
 {
     if (queue->size < 0)
@@ -85,19 +141,35 @@ void EnqueueArrInt(QueueIntArr *queue, int value)
         queue->array[++queue->size] = value;
     }
 }
-int DequeueArrInt(QueueIntArr *queue)
+
+ReturnIntValue DequeueArrInt(QueueIntArr *queue)
 {
+    if (queue->size < 0)
+    {
+        (ReturnIntValue){
+            0, /*value*/
+            0  /*state*/
+        };
+    }
     int val = queue->array[queue->frontIndex];
-    for (int i = 0; i < queue->size - 1; i++)
+    for (int i = 0; i < queue->size; i++)
     {
         queue->array[i] = queue->array[i + 1];
     }
     queue->size--;
-    return val;
+    return (ReturnIntValue){
+        val, /*value*/
+        1    /*state*/
+    };
+    ;
 }
 #pragma endregion
 #pragma region List Based
 // string Queus Funcs
+int IsQueueStringEmpty(QueueStringList *head)
+{
+    return head->next == NULL;
+}
 
 QueueStringList *CreateQueueString()
 {
@@ -140,22 +212,31 @@ void EnqueueListStr(QueueStringList *head, char *value)
     newNode->previous = tmp;
 }
 
-char *DequeueListStr(QueueStringList *head)
+ReturnStrValue DequeueListStr(QueueStringList *head)
 {
+    if (IsQueueStringEmpty(head))
+    {
+        return (ReturnStrValue){
+            NULL,
+            1 /*state*/
+        };
+    }
     QueueStringList *tmp = head->next;
     head->next = tmp->next;
     if (head->next)
+    {
         head->next->previous = NULL;
+        head->tail = head->next;
+    }
     else
         head->tail = NULL;
     char *val = strdup(tmp->val);
+    free(tmp->val);
     free(tmp);
-    return val;
-}
-
-int IsQueueStringEmpty(QueueStringList *head)
-{
-    return head->next == NULL;
+    return (ReturnStrValue){
+        val,
+        1 /*state*/
+    };
 }
 
 void DestroyQueueListString(QueueStringList *head)
@@ -171,6 +252,11 @@ void DestroyQueueListString(QueueStringList *head)
 }
 
 // Int queues Funcs
+
+int IsQueueIntEmpty(QueueIntList *head)
+{
+    return head->next == NULL;
+}
 
 QueueIntList *CreateQueueInt()
 {
@@ -194,7 +280,6 @@ void EnqueueListInt(QueueIntList *head, int value)
 
     if (head->next == NULL)
     {
-        printf("%d\n", value);
         head->next = newNode;
         newNode->previous = NULL;
         head->tail = newNode;
@@ -205,24 +290,33 @@ void EnqueueListInt(QueueIntList *head, int value)
     head->tail = newNode;
     tmp->next = newNode;
     newNode->previous = tmp;
-    printf("%d\n", newNode->val);
+    printf("%p\n", newNode);
 }
-int DequeueListInt(QueueIntList *head)
+
+ReturnIntValue DequeueListInt(QueueIntList *head)
 {
+    if (IsQueueIntEmpty(head))
+    {
+        return (ReturnIntValue){
+            0,
+            1 /*state*/
+        };
+    }
     QueueIntList *tmp = head->next;
     head->next = tmp->next;
     if (head->next)
+    {
         head->next->previous = NULL;
+        head->tail = head->next;
+    }
     else
         head->tail = NULL;
     int val = tmp->val;
     free(tmp);
-    return val;
-}
-
-int IsQueueIntEmpty(QueueIntList *head)
-{
-    return head->next == NULL;
+    return (ReturnIntValue){
+        val,
+        1 /*state*/
+    };
 }
 
 void DestroyQueueListInt(QueueIntList *head)
