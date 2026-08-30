@@ -108,7 +108,7 @@ ReturnStrValue DequeueArrStr(QueueStringArr *queue)
         printf("Iteration n°%d, i: %s, i+1: %s\n", i, queue->array[i], queue->array[i + 1]);
         strcpy(queue->array[i], queue->array[i + 1]);
     }
-    queue->size--;
+    free(queue->array[queue->size--]);
     return (ReturnStrValue){
         val, /*value*/
         1    /*state*/
@@ -218,7 +218,7 @@ ReturnStrValue DequeueListStr(QueueStringList *head)
     {
         return (ReturnStrValue){
             NULL,
-            1 /*state*/
+            0 /*state*/
         };
     }
     QueueStringList *tmp = head->next;
@@ -299,7 +299,7 @@ ReturnIntValue DequeueListInt(QueueIntList *head)
     {
         return (ReturnIntValue){
             0,
-            1 /*state*/
+            0 /*state*/
         };
     }
     QueueIntList *tmp = head->next;
