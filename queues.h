@@ -1,6 +1,8 @@
 #ifndef QUEUES_H_
 #define QUEUES_H_
 
+
+
 #define DEFINE_LST_QUEUE(type)                                                                                                                                                \
     typedef struct type##_lst_queue                                                                                                                                           \
     {                                                                                                                                                                         \
@@ -46,7 +48,7 @@
         return head;                                                                                                                                                          \
     }                                                                                                                                                                         \
                                                                                                                                                                               \
-    int type##_IsQueueStringEmpty(type##_LstQueue *head) { return head->next == NULL; }                                                                                       \
+    int type##_IsQueueEmpty(type##_LstQueue *head) { return head->next == NULL; }                                                                                       \
     void type##_EnqueueList(type##_LstQueue *head, type value)                                                                                                                \
     {                                                                                                                                                                         \
         type##_LstQueue *newNode = (type##_LstQueue *)malloc(sizeof(type##_LstQueue));                                                                                        \
@@ -77,7 +79,7 @@
     }                                                                                                                                                                         \
     type##_ReturnValue type##_DequeueListStr(type##_LstQueue *head)                                                                                                           \
     {                                                                                                                                                                         \
-        if (type##_IsQueueStringEmpty(head))                                                                                                                                  \
+        if (type##_IsQueueEmpty(head))                                                                                                                                  \
         {                                                                                                                                                                     \
             return (type##_ReturnValue){                                                                                                                                      \
                 head->nullValue,                                                                                                                                              \
@@ -99,7 +101,7 @@
         else                                                                                                                                                                  \
             val = tmp->val;                                                                                                                                                   \
         if (tmp->destroy)                                                                                                                                                     \
-            tmp->destroy((void *)tmp->val);                                                                                                                                   \
+            tmp->destroy((void *)&tmp->val);                                                                                                                                   \
         free(tmp);                                                                                                                                                            \
         return (type##_ReturnValue){                                                                                                                                          \
             val,                                                                                                                                                              \
@@ -107,15 +109,15 @@
         };                                                                                                                                                                    \
     }                                                                                                                                                                         \
                                                                                                                                                                               \
-    void type##_DestroyQueueList(type##_LstQueue *head)                                                                                                                       \
+    void type##_DestroyQueueList(type##_LstQueue **head)                                                                                                                       \
     {                                                                                                                                                                         \
-        type##_LstQueue *tmp = head;                                                                                                                                          \
-        while (head)                                                                                                                                                          \
+        type##_LstQueue *tmp = *head;                                                                                                                                          \
+        while (*head)                                                                                                                                                          \
         {                                                                                                                                                                     \
-            tmp = head;                                                                                                                                                       \
-            head = head->next;                                                                                                                                                \
+            tmp = *head;                                                                                                                                                       \
+            *head = (*head)->next;                                                                                                                                                \
             if (tmp->destroy)                                                                                                                                                 \
-                tmp->destroy(tmp->val);                                                                                                                                       \
+                tmp->destroy(&tmp->val);                                                                                                                                       \
             free(tmp);                                                                                                                                                        \
         }                                                                                                                                                                     \
     }
@@ -211,7 +213,7 @@
                 queue->array[i] = queue->array[i + 1];                                                                                                                            \
         }                                                                                                                                                                         \
         if (queue->destroy)                                                                                                                                                       \
-            queue->destroy(queue->array[queue->size--]);                                                                                                                          \
+            queue->destroy(&queue->array[queue->size--]);                                                                                                                          \
         else                                                                                                                                                                      \
             queue->size--;                                                                                                                                                        \
         return (type##_ReturnValue){                                                                                                                                              \
@@ -223,7 +225,7 @@
     {                                                                                                                                                                             \
         if (queue->destroy)                                                                                                                                                       \
             for (int i = 0; i <= queue->size; i++)                                                                                                                                \
-                queue->destroy((void *)queue->array[i]);                                                                                                                          \
+                queue->destroy((void *)&queue->array[i]);                                                                                                                          \
                                                                                                                                                                                   \
         free(queue);                                                                                                                                                              \
     }

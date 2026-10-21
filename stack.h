@@ -99,9 +99,9 @@
         };                                                                                                                                                                    \
     }                                                                                                                                                                         \
                                                                                                                                                                               \
-    void type##_DestroyStack(type##_LstStack *head)                                                                                                                           \
+    void type##_DestroyStack(type##_LstStack **head)                                                                                                                           \
     {                                                                                                                                                                         \
-        type##_LstStack *current = head;                                                                                                                                      \
+        type##_LstStack *current = (*head);                                                                                                                                      \
         while (current != NULL)                                                                                                                                               \
         {                                                                                                                                                                     \
             type##_LstStack *tmp = current;                                                                                                                                   \
@@ -197,12 +197,12 @@
     {                                                                                                                                                                         \
         return stack->indexOfTop == -1;                                                                                                                                       \
     }                                                                                                                                                                         \
-    void type##_DestroyStack(type##_ArrStack *stack)                                                                                                                          \
+    void type##_DestroyStack(type##_ArrStack **stack)                                                                                                                          \
     {                                                                                                                                                                         \
-        if (stack->destroy)                                                                                                                                                   \
+        if ((*stack)->destroy)                                                                                                                                                   \
         {                                                                                                                                                                     \
-            for (int i = 0; i <= stack->indexOfTop; i++)                                                                                                                      \
-                stack->destroy((void *)stack->array[i]);                                                                                                                      \
+            for (int i = 0; i <= (*stack)->indexOfTop; i++)                                                                                                                      \
+                (*stack)->destroy((void *)&(*stack)->array[i]);                                                                                                                      \
         }                                                                                                                                                                     \
         free(stack);                                                                                                                                                          \
     }

@@ -1,13 +1,14 @@
 #ifndef LINKEDLISTS_H_
 #define LINKEDLISTS_H_
 
+
 #define DEFINE_LIST(type)                                                                                                                                            \
     typedef struct type##_list_node                                                                                                                                  \
     {                                                                                                                                                                \
         type VALUE;                                                                                                                                                  \
         /*destroy sert a pointer vers une fonction pour détruire les valeurs de la liste (free notamment)mais par exemple                                           \
          pour une list de int il ne faut surtout pas les free donc dans ce cas la ou envoie un pointeur NULL dans createlist*/                                       \
-        void (*destroy)(void *);                                                                                                                                     \
+        void (*destroy)(type *);                                                                                                                                     \
         /* besoin de passer par une fonction auxiliaire pour strcmp car elle prend des paramètres de types cont char* et nn char*                                   \
         et sinonca compile pas                                                                                                                                       \
         de cette manière on peut garder la mutabilité des char* avec la comparaison*/                                                                              \
@@ -17,7 +18,7 @@
         struct type##_list_node *next;                                                                                                                               \
     } type##_ListNode;                                                                                                                                               \
                                                                                                                                                                      \
-    type##_ListNode *type##CreateList(void (*destroyFunc)(void *), int (*compareFunc)(type, type), void (*printFunc)(struct type##_list_node *), type (*copy)(type)) \
+    type##_ListNode *type##CreateList(void (*destroyFunc)(type *), int (*compareFunc)(type, type), void (*printFunc)(struct type##_list_node *), type (*copy)(type)) \
     {                                                                                                                                                                \
         type##_ListNode *head = (type##_ListNode *)malloc(sizeof(type##_ListNode));                                                                                  \
         if (!head)                                                                                                                                                   \
@@ -88,17 +89,20 @@
         }                                                                                                                                                            \
         return NULL;                                                                                                                                                 \
     }                                                                                                                                                                \
-    void type##FreeListMemory(type##_ListNode *head)                                                                                                                 \
+    void type##FreeListMemory(type##_ListNode **head)                                                                                                                 \
     {                                                                                                                                                                \
         type##_ListNode *tmp;                                                                                                                                        \
-        while (head != NULL)                                                                                                                                         \
+        while (*head != NULL)                                                                                                                                         \
         {                                                                                                                                                            \
-            tmp = head;                                                                                                                                              \
-            head = head->next;                                                                                                                                       \
+            tmp = (*head);                                                                                                                                              \
+            (*head) = (*head)->next;                                                                                                                                       \
             /*ici test de "l'existence" de la fonction destroy si elle est pas null                                                                                  \
-             cela veut dire que  et VALUE doit etre free et donc on doit appelé destroy*/                                                                           \
+             cela veut dire que  et VALUE doit etre free et donc on doit appelé destroy*/                                                                            \
             if (tmp->destroy)                                                                                                                                        \
-                tmp->destroy((void *)tmp->VALUE);                                                                                                                    \
+            {                                                                                                                                                        \
+                type val = tmp->VALUE;                                                                                                                               \
+                tmp->destroy((void *)&val);                                                                                                                           \
+            }                                                                                                                                                        \
             free(tmp);                                                                                                                                               \
         }                                                                                                                                                            \
     }
