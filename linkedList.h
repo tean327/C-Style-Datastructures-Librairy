@@ -11,11 +11,12 @@
         void (*destroy)(type *);                                                                                                                                     \
         /* besoin de passer par une fonction auxiliaire pour strcmp car elle prend des paramètres de types cont char* et nn char*                                   \
         et sinonca compile pas                                                                                                                                       \
-        de cette manière on peut garder la mutabilité des char* avec la comparaison*/                                                                              \
+        de cette manière on peut garder la mutabilité des char* avec la comparaison*/                                                                                \
         int (*compare)(type, type);                                                                                                                                  \
         void (*print)(struct type##_list_node *);                                                                                                                    \
         type (*copy)(type);                                                                                                                                          \
         struct type##_list_node *next;                                                                                                                               \
+        struct type##_list_node *tail;                                                                                                                                                             \
     } type##_ListNode;                                                                                                                                               \
                                                                                                                                                                      \
     type##_ListNode *type##CreateList(void (*destroyFunc)(type *), int (*compareFunc)(type, type), void (*printFunc)(struct type##_list_node *), type (*copy)(type)) \
@@ -31,6 +32,7 @@
         head->compare = compareFunc;                                                                                                                                 \
         head->print = printFunc;                                                                                                                                     \
         head->copy = copy;                                                                                                                                           \
+        head->tail = NULL;                                                                                                                                                             \
         return head;                                                                                                                                                 \
     }                                                                                                                                                                \
                                                                                                                                                                      \
@@ -54,16 +56,13 @@
         newNode->next = NULL;                                                                                                                                        \
         if (head->next == NULL)                                                                                                                                      \
         {                                                                                                                                                            \
-            head->next = newNode;                                                                                                                                    \
+            head->next = newNode;      \
+            head->tail = newNode;                                                                                                                              \
         }                                                                                                                                                            \
         else                                                                                                                                                         \
         {                                                                                                                                                            \
-            type##_ListNode *current = head->next;                                                                                                                   \
-            while (current->next != NULL)                                                                                                                            \
-            {                                                                                                                                                        \
-                current = current->next;                                                                                                                             \
-            }                                                                                                                                                        \
-            current->next = newNode;                                                                                                                                 \
+            head->tail->next = newNode;                                                                                                                                                  \
+            head->tail = newNode;                                                                                                                                 \
         }                                                                                                                                                            \
     }                                                                                                                                                                \
     type##_ListNode *type##GetListNodeFromValue(type##_ListNode *head, type value)                                                                                   \
