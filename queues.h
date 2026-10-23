@@ -12,7 +12,7 @@
         struct type##_lst_queue *tail;                                                                                                                                        \
         /*destroy sert a pointer vers une fonction pour détruire les valeurs de la liste (free notamment)mais par exemple                                                    \
          pour une list de int il ne faut surtout pas les free donc dans ce cas la ou envoie un pointeur NULL dans la fonction create*/                                        \
-        void (*destroy)(void *);                                                                                                                                              \
+        void (*destroy)(type *);                                                                                                                                              \
         /* besoin de passer par une fonction auxiliaire pour strcmp car elle prend des paramètres de types cont char* et nn char*                                            \
         et sinon ca compile pas                                                                                                                                               \
         de cette manière on peut garder la mutabilité des char* avec la comparaison*/                                                                                       \
@@ -29,7 +29,7 @@
         int state; /* 0 == not ok else ok*/                                                                                                                                   \
     } type##_ReturnValue;                                                                                                                                                     \
                                                                                                                                                                               \
-    type##_LstQueue *type##CreateQueue(void (*destroyFunc)(void *), int (*compareFunc)(type, type), void (*printFunc)(type##_LstQueue *), type (*copy)(type), type nullValue) \
+    type##_LstQueue *type##CreateQueueList(void (*destroyFunc)(type *), int (*compareFunc)(type, type), void (*printFunc)(type##_LstQueue *), type (*copy)(type), type nullValue) \
     {                                                                                                                                                                         \
         type##_LstQueue *head = (type##_LstQueue *)malloc(sizeof(type##_LstQueue));                                                                                           \
         if (!head)                                                                                                                                                            \
@@ -126,12 +126,9 @@
     typedef struct type##_queue_arr                                                                                                                                               \
     {                                                                                                                                                                             \
         type array[Size];                                                                                                                                                         \
-        struct type##_lst_queue *next;                                                                                                                                            \
-        struct type##_lst_queue *previous;                                                                                                                                        \
-        struct type##_lst_queue *tail;                                                                                                                                            \
         /*destroy sert a pointer vers une fonction pour détruire les valeurs de la liste (free notamment)mais par exemple                                                        \
          pour une list de int il ne faut surtout pas les free donc dans ce cas la ou envoie un pointeur NULL dans la fonction create*/                                            \
-        void (*destroy)(void *);                                                                                                                                                  \
+        void (*destroy)(type *);                                                                                                                                                  \
         /* besoin de passer par une fonction auxiliaire pour strcmp car elle prend des paramètres de types cont char* et nn char*                                                \
         et sinon ca compile pas                                                                                                                                                   \
         de cette manière on peut garder la mutabilité des char* avec la comparaison*/                                                                                           \
@@ -148,7 +145,7 @@
         type val;                                                                                                                                                                 \
         int state; /* 0 == not ok else ok*/                                                                                                                                       \
     } type##_ReturnValue;                                                                                                                                                         \
-    type##_QueueArr *type##_CreateArrQueue(void (*destroyFunc)(void *), int (*compareFunc)(type, type), void (*printFunc)(type##_QueueArr *), type (*copy)(type), type nullValue) \
+    type##_QueueArr *type##_CreateArrQueue(void (*destroyFunc)(type *), int (*compareFunc)(type, type), void (*printFunc)(type##_QueueArr *), type (*copy)(type), type nullValue) \
     {                                                                                                                                                                             \
         type##_QueueArr *queue = (type##_QueueArr *)malloc(sizeof(type##_QueueArr));                                                                                              \
         if (!queue)                                                                                                                                                               \
@@ -205,12 +202,16 @@
         }                                                                                                                                                                         \
         else                                                                                                                                                                      \
             val = queue->array[queue->frontIndex];                                                                                                                                \
-        for (int i = 0; i < queue->size; i++)                                                                                                                                     \
+        for (int i = 0; i <= queue->size; i++)                                                                                                                                     \
         {                                                                                                                                                                         \
             if (queue->copy)                                                                                                                                                      \
+            {                                                                                                                                                                     \
+                if(queue->destroy)                                                                                                                                                \
+                    queue->destroy(&queue->array[i]);                                                                                                                             \
                 queue->array[i] = queue->copy(queue->array[i + 1]);                                                                                                               \
-            else                                                                                                                                                                  \
-                queue->array[i] = queue->array[i + 1];                                                                                                                            \
+            }                                                                                                                                                                     \
+            else                                                                                                                                                        \
+                queue->array[i] = queue->array[i + 1];                                                                                                             \
         }                                                                                                                                                                         \
         if (queue->destroy)                                                                                                                                                       \
             queue->destroy(&queue->array[queue->size--]);                                                                                                                          \
@@ -221,13 +222,13 @@
             1    /*state*/                                                                                                                                                        \
         };                                                                                                                                                                        \
     }                                                                                                                                                                             \
-    void type##_DestroyQueueArr(type##_QueueArr *queue)                                                                                                                           \
+    void type##_DestroyQueueArr(type##_QueueArr **queue)                                                                                                                           \
     {                                                                                                                                                                             \
-        if (queue->destroy)                                                                                                                                                       \
-            for (int i = 0; i <= queue->size; i++)                                                                                                                                \
-                queue->destroy((void *)&queue->array[i]);                                                                                                                          \
+        if ((*queue)->destroy)                                                                                                                                                       \
+            for (int i = 0; i <= (*queue)->size; i++)                                                                                                                                \
+                (*queue)->destroy((void *)&(*queue)->array[i]);                                                                                                                          \
                                                                                                                                                                                   \
-        free(queue);                                                                                                                                                              \
+        free(*queue);                                                                                                                                                              \
     }
 
 #pragma region Queue
