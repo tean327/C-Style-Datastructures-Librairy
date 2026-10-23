@@ -9,7 +9,7 @@
         struct type##_lst_stack *next;                                                                                                                                        \
         /*destroy sert a pointer vers une fonction pour détruire les valeurs de la liste (free notamment)mais par exemple                                                    \
          pour une list de int il ne faut surtout pas les free donc dans ce cas la ou envoie un pointeur NULL dans la fonction create*/                                        \
-        void (*destroy)(void *);                                                                                                                                              \
+        void (*destroy)(type *);                                                                                                                                              \
         /* besoin de passer par une fonction auxiliaire pour strcmp car elle prend des paramètres de types cont char* et nn char*                                            \
         et sinon ca compile pas                                                                                                                                               \
         de cette manière on peut garder la mutabilité des char* avec la comparaison*/                                                                                       \
@@ -26,7 +26,7 @@
         int state; /* 0 == not ok else ok*/                                                                                                                                   \
     } type##_ReturnValue;                                                                                                                                                     \
                                                                                                                                                                               \
-    type##_LstStack *type##CreateStack(void (*destroyFunc)(void *), int (*compareFunc)(type, type), void (*printFunc)(type##_LstStack *), type (*copy)(type), type nullValue) \
+    type##_LstStack *type##CreateStackList(void (*destroyFunc)(type *), int (*compareFunc)(type, type), void (*printFunc)(type##_LstStack *), type (*copy)(type), type nullValue) \
     {                                                                                                                                                                         \
         type##_LstStack *head = (type##_LstStack *)malloc(sizeof(type##_LstStack));                                                                                           \
         if (!head)                                                                                                                                                            \
@@ -99,7 +99,7 @@
         };                                                                                                                                                                    \
     }                                                                                                                                                                         \
                                                                                                                                                                               \
-    void type##_DestroyStack(type##_LstStack **head)                                                                                                                           \
+    void type##_DestroyStackList(type##_LstStack **head)                                                                                                                           \
     {                                                                                                                                                                         \
         type##_LstStack *current = (*head);                                                                                                                                      \
         while (current != NULL)                                                                                                                                               \
@@ -107,7 +107,7 @@
             type##_LstStack *tmp = current;                                                                                                                                   \
             current = current->next;                                                                                                                                          \
             if (tmp->destroy)                                                                                                                                                 \
-                tmp->destroy((void *)tmp->val);                                                                                                                               \
+                tmp->destroy((void *)&tmp->val);                                                                                                                               \
             free(tmp);                                                                                                                                                        \
         }                                                                                                                                                                     \
     }
@@ -119,7 +119,7 @@
         int indexOfTop;                                                                                                                                                       \
         /*destroy sert a pointer vers une fonction pour détruire les valeurs de la liste (free notamment)mais par exemple                                                    \
          pour une list de int il ne faut surtout pas les free donc dans ce cas la ou envoie un pointeur NULL dans createstack*/                                               \
-        void (*destroy)(void *);                                                                                                                                              \
+        void (*destroy)(type *);                                                                                                                                              \
         int (*compare)(type, type);                                                                                                                                           \
         void (*print)(struct type##_arr_stack *);                                                                                                                             \
         type (*copy)(type);                                                                                                                                                   \
@@ -134,7 +134,7 @@
     int type##IsFull(type##_ArrStack *stack);                                                                                                                                 \
     int type##IsEmpty(type##_ArrStack *stack);                                                                                                                                \
                                                                                                                                                                               \
-    type##_ArrStack *type##CreateStack(void (*destroyFunc)(void *), int (*compareFunc)(type, type), void (*printFunc)(type##_ArrStack *), type (*copy)(type), type nullValue) \
+    type##_ArrStack *type##CreateStackArr(void (*destroyFunc)(type *), int (*compareFunc)(type, type), void (*printFunc)(type##_ArrStack *), type (*copy)(type), type nullValue) \
     {                                                                                                                                                                         \
         type##_ArrStack *stack = (type##_ArrStack *)malloc(sizeof(type##_ArrStack));                                                                                          \
         if (!stack)                                                                                                                                                           \
@@ -197,78 +197,78 @@
     {                                                                                                                                                                         \
         return stack->indexOfTop == -1;                                                                                                                                       \
     }                                                                                                                                                                         \
-    void type##_DestroyStack(type##_ArrStack **stack)                                                                                                                          \
+    void type##_DestroyStackArr(type##_ArrStack **stack)                                                                                                                          \
     {                                                                                                                                                                         \
         if ((*stack)->destroy)                                                                                                                                                   \
         {                                                                                                                                                                     \
             for (int i = 0; i <= (*stack)->indexOfTop; i++)                                                                                                                      \
                 (*stack)->destroy((void *)&(*stack)->array[i]);                                                                                                                      \
         }                                                                                                                                                                     \
-        free(stack);                                                                                                                                                          \
+        free(*stack);                                                                                                                                                          \
     }
-#pragma region Struct
+// #pragma region Struct
 
-typedef struct array_int_stack
-{
-    int array[50];
-    int indexOfTop;
-} StackArrInt;
+// typedef struct array_int_stack
+// {
+//     int array[50];
+//     int indexOfTop;
+// } StackArrInt;
 
-typedef struct list_int_stack
-{
-    int val;
-    struct list_int_stack *next;
-} StackListInt;
+// typedef struct list_int_stack
+// {
+//     int val;
+//     struct list_int_stack *next;
+// } StackListInt;
 
-typedef struct valueInt
-{
-    int val;
-    int state; /* 0 == not ok else ok*/
-} ReturnIntValue;
+// typedef struct valueInt
+// {
+//     int val;
+//     int state; /* 0 == not ok else ok*/
+// } ReturnIntValue;
 
-typedef struct array_string_stack
-{
-    char *array[50];
-    int indexOfTop;
-} StackArrString;
+// typedef struct array_string_stack
+// {
+//     char *array[50];
+//     int indexOfTop;
+// } StackArrString;
 
-typedef struct list_string_stack
-{
-    char *val;
-    struct list_string_stack *next;
-} StackListString;
+// typedef struct list_string_stack
+// {
+//     char *val;
+//     struct list_string_stack *next;
+// } StackListString;
 
-typedef struct valueStr
-{
-    int val;
-    int state; /* 0 == ok else not ok*/
-} ReturnStrValue;
-#pragma endregion
+// typedef struct valueStr
+// {
+//     int val;
+//     int state; /* 0 == ok else not ok*/
+// } ReturnStrValue;
+// #pragma endregion
 
-#pragma region Stack Functions
-#pragma region List Based Stack
-// int stack funcs
-StackListInt *CreateIntStack();
-void PushListInt(StackListInt **head, int value);
-ReturnIntValue PopListInt(StackListInt **head);
-ReturnIntValue PeekListInt(StackListInt **head);
-void DestroyStackListInt(StackListInt *head);
-// string stack funcs
-StackListString *CreateStringStack();
-void PushListString(StackListString **head, char *value);
-ReturnStrValue PopListString(StackListString **head);
-ReturnStrValue PeekListString(StackListString *head);
-void DestroyStackListString(StackListString *head);
-#pragma endregion
-#pragma region Array Based Stack
-// int stack funcs
-void PushArrInt(StackArrInt *stack, int value);
-int PopArrInt(StackArrInt *stack);
-int PeekArrInt(StackArrInt *stack);
-// string stack funcs
-void PushArrString(StackArrString *stack, char *value);
-char *PopArrString(StackArrString *stack);
-char *PeekArrString(StackArrString *stack);
-#pragma endregion
-#pragma endregion
+// #pragma region Stack Functions
+// #pragma region List Based Stack
+// // int stack funcs
+// StackListInt *CreateIntStack();
+// void PushListInt(StackListInt **head, int value);
+// ReturnIntValue PopListInt(StackListInt **head);
+// ReturnIntValue PeekListInt(StackListInt **head);
+// void DestroyStackListInt(StackListInt *head);
+// // string stack funcs
+// StackListString *CreateStringStack();
+// void PushListString(StackListString **head, char *value);
+// ReturnStrValue PopListString(StackListString **head);
+// ReturnStrValue PeekListString(StackListString *head);
+// void DestroyStackListString(StackListString *head);
+// #pragma endregion
+// #pragma region Array Based Stack
+// // int stack funcs
+// void PushArrInt(StackArrInt *stack, int value);
+// int PopArrInt(StackArrInt *stack);
+// int PeekArrInt(StackArrInt *stack);
+// // string stack funcs
+// void PushArrString(StackArrString *stack, char *value);
+// char *PopArrString(StackArrString *stack);
+// char *PeekArrString(StackArrString *stack);
+// #pragma endregion
+// #pragma endregion
 #endif
