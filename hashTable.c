@@ -80,14 +80,14 @@ HashTable *CreateHashTable(int tableSize)
     if (table == NULL)
     {
         printf("Unable to allocate memory for new table\n");
-        exit(1);
+        return NULL;
     }
     table->size = tableSize;
     table->hashData = malloc(tableSize * sizeof(ListItem *));
     if (table->hashData == NULL)
     {
         printf("Unable to allocate memory for new table data\n");
-        exit(1);
+        return NULL;
     }
 
     for (int i = 0; i < tableSize; i++)
@@ -96,7 +96,7 @@ HashTable *CreateHashTable(int tableSize)
         if (table->hashData[i] == NULL)
         {
             printf("Unable to allocate memory for new list item\n");
-            exit(1);
+            return NULL;
         }
         table->hashData[i]->next = NULL;
         table->hashData[i]->value = NULL;
