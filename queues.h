@@ -77,7 +77,7 @@
         newNode->next = NULL;                                                                                                                                                 \
         newNode->previous = tmp;                                                                                                                                              \
     }                                                                                                                                                                         \
-    type##_ReturnValue type##_DequeueListStr(type##_LstQueue *head)                                                                                                           \
+    type##_ReturnValue type##_DequeueList(type##_LstQueue *head)                                                                                                           \
     {                                                                                                                                                                         \
         if (type##_IsQueueEmpty(head))                                                                                                                                  \
         {                                                                                                                                                                     \
@@ -91,7 +91,6 @@
         if (head->next)                                                                                                                                                       \
         {                                                                                                                                                                     \
             head->next->previous = NULL;                                                                                                                                      \
-            head->tail = head->next;                                                                                                                                          \
         }                                                                                                                                                                     \
         else                                                                                                                                                                  \
             head->tail = NULL;                                                                                                                                                \
@@ -170,7 +169,7 @@
             queue->size = -1;                                                                                                                                                     \
             queue->frontIndex = 0;                                                                                                                                                \
         }                                                                                                                                                                         \
-        if (queue->size + 1 < 50)                                                                                                                                                 \
+        if (queue->size + 1 < Size)                                                                                                                                                 \
         {                                                                                                                                                                         \
             if (queue->copy)                                                                                                                                                      \
                 queue->array[++queue->size] = queue->copy(value);                                                                                                                 \
