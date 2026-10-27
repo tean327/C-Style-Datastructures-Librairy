@@ -68,8 +68,12 @@ void FreeListItemMemory(ListItem *head)
     {
         tmp = head;
         head = head->next;
-        free(tmp->value->data);
-        free(tmp->value);
+        if(tmp->value)
+        {   
+            if(tmp->value->data)
+                free(tmp->value->data);
+            free(tmp->value);
+        }
         free(tmp);
     }
 }
@@ -130,12 +134,14 @@ void InsertIntoHashTable(char *str, HashTable *table)
     if (newItem == NULL)
     {
         printf("Unable to allocate memory for new item\n");
-        exit(1);
     }
-    newItem->data = strdup(str);
-    newItem->key = key;
-    AddAtEndOfListItem(newItem, table->hashData[key]);
-    table->count++;
+    else
+    {
+        newItem->data = strdup(str);
+        newItem->key = key;
+        AddAtEndOfListItem(newItem, table->hashData[key]);
+        table->count++;
+    }
 }
 
 ListItem *GetItemInsideTable(HashTable *table, char *str)
