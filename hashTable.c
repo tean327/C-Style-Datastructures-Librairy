@@ -20,7 +20,6 @@ typedef struct NodeHashTable
 {
     ListItem **hashData;
     int size;
-    int count;
 } HashTable;
 #pragma endregion
 
@@ -58,7 +57,7 @@ ListItem *GetListItemNodeFromValue(ListItem *head, char *value, int key)
     ListItem *searchNode = head->next;
     while (searchNode != NULL)
     {
-        if (strcmp(searchNode->value->data, value) == 0 && searchNode->value->key == key)
+        if (strcmp(searchNode->value->data, value) == 0)
         {
             return searchNode;
         }
@@ -97,6 +96,7 @@ HashTable *CreateHashTable(int tableSize)
     if (table->hashData == NULL)
     {
         printf("Unable to allocate memory for new table data\n");
+        free(table);
         return NULL;
     }
 
@@ -106,6 +106,8 @@ HashTable *CreateHashTable(int tableSize)
         if (table->hashData[i] == NULL)
         {
             printf("Unable to allocate memory for new list item\n");
+            free(table->hashData);
+            free(table);
             return NULL;
         }
         table->hashData[i]->next = NULL;
@@ -127,8 +129,8 @@ void DestroyHashTable(HashTable *table)
 
 unsigned int hash(char *str, int hashSize)
 {
-    int sum = 0;
-    for (int i = 0; i < strlen(str); i++)
+    int sum = 0, lenght = strlen(str);
+    for (int i = 0; i < lenght; i++)
     {
         sum += str[i];
     }
@@ -148,7 +150,6 @@ void InsertIntoHashTable(char *str, HashTable *table)
         newItem->data = strdup(str);
         newItem->key = key;
         AddAtEndOfListItem(newItem, table->hashData[key]);
-        table->count++;
     }
 }
 
@@ -166,20 +167,20 @@ void DeleteFromHashTable(HashTable *table, char *str)
 
     while (searchNode->next != NULL)
     {
-        if (strcmp(searchNode->next->value->data, str) == 0 && searchNode->next->value->key == key)
+        if (strcmp(searchNode->next->value->data, str) == 0)
         {
             ListItem* tmp = searchNode->next;
             searchNode->next = searchNode->next->next;
             
-            if(tmp)
+            if(table->hashData[key]->tail == tmp) 
+                table->hashData[key]->tail = searchNode;
+
+            if(tmp->value)
             {
-                if(tmp->value)
-                {
-                    if(tmp->value->data) free(tmp->value->data);
-                    free(tmp->value);
-                }
-                free(tmp);
+                if(tmp->value->data) free(tmp->value->data);
+                free(tmp->value);
             }
+            free(tmp);
             break;
         }
         searchNode = searchNode->next;
