@@ -31,5 +31,6 @@ void AddAtEndOfListItem(Item *value, ListItem *head);
 ListItem *GetListItemNodeFromValue(ListItem *head, char *value, int key);
 void FreeListItemMemory(ListItem *head);
 ListItem *GetItemInsideTable(HashTable *table, char *str);
+void DeleteFromHashTable(HashTable *table, char *str);
 #pragma endregion
 #endif

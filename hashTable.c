@@ -13,6 +13,7 @@ typedef struct listHashItem
 {
     Item *value;
     struct listHashItem *next;
+    struct listHashItem *tail;
 } ListItem;
 
 typedef struct NodeHashTable
@@ -29,18 +30,23 @@ void AddAtEndOfListItem(Item *value, ListItem *head)
     if (newNode == NULL)
     {
         printf("Unable to allocate memory for new node\n");
-        // Exit will end the program with the code 1
-        exit(1);
     }
-    newNode->value = value;
-    newNode->next = NULL;
-
-    ListItem *current = head;
-    while (current->next != NULL)
+    else
     {
-        current = current->next;
+        newNode->value = value;
+        newNode->next = NULL;
+
+        if(head->tail)
+        {
+            ListItem *current = head->tail;
+            current->next = newNode;
+        }
+        else
+        {
+            head->next = newNode;
+        }
+        head->tail = newNode;
     }
-    current->next = newNode;
 }
 
 /// @brief This function is used to get the node from a list based on a parameter value it can also be used to check if a value is inside a list but it's quite to big for only that
@@ -104,6 +110,7 @@ HashTable *CreateHashTable(int tableSize)
         }
         table->hashData[i]->next = NULL;
         table->hashData[i]->value = NULL;
+        table->hashData[i]->tail = NULL;
     }
     return table;
 }
@@ -117,6 +124,7 @@ void DestroyHashTable(HashTable *table)
     free(table->hashData);
     free(table);
 }
+
 unsigned int hash(char *str, int hashSize)
 {
     int sum = 0;
@@ -148,4 +156,32 @@ ListItem *GetItemInsideTable(HashTable *table, char *str)
 {
     int key = hash(str, table->size);
     return GetListItemNodeFromValue(table->hashData[key], str, key);
+}
+
+void DeleteFromHashTable(HashTable *table, char *str)
+{
+    int key = hash(str, table->size);
+
+    ListItem *searchNode = table->hashData[key];
+
+    while (searchNode->next != NULL)
+    {
+        if (strcmp(searchNode->next->value->data, str) == 0 && searchNode->next->value->key == key)
+        {
+            ListItem* tmp = searchNode->next;
+            searchNode->next = searchNode->next->next;
+            
+            if(tmp)
+            {
+                if(tmp->value)
+                {
+                    if(tmp->value->data) free(tmp->value->data);
+                    free(tmp->value);
+                }
+                free(tmp);
+            }
+            break;
+        }
+        searchNode = searchNode->next;
+    }
 }
