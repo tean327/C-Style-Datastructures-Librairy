@@ -13,13 +13,12 @@
         et sinonca compile pas                                                                                                                                       \
         de cette manière on peut garder la mutabilité des char* avec la comparaison*/                                                                                \
         int (*compare)(type, type);                                                                                                                                  \
-        void (*print)(struct type##_list_node *);                                                                                                                    \
         type (*copy)(type);                                                                                                                                          \
         struct type##_list_node *next;                                                                                                                               \
         struct type##_list_node *tail;                                                                                                                                                             \
     } type##_ListNode;                                                                                                                                               \
                                                                                                                                                                      \
-    type##_ListNode *type##CreateList(void (*destroyFunc)(type *), int (*compareFunc)(type, type), void (*printFunc)(struct type##_list_node *), type (*copy)(type)) \
+    type##_ListNode *type##CreateList(void (*destroyFunc)(type *), int (*compareFunc)(type, type), type (*copy)(type)) \
     {                                                                                                                                                                \
         type##_ListNode *head = (type##_ListNode *)malloc(sizeof(type##_ListNode));                                                                                  \
         if (!head)                                                                                                                                                   \
@@ -30,7 +29,6 @@
         head->next = NULL;                                                                                                                                           \
         head->destroy = destroyFunc;                                                                                                                                 \
         head->compare = compareFunc;                                                                                                                                 \
-        head->print = printFunc;                                                                                                                                     \
         head->copy = copy;                                                                                                                                           \
         head->tail = NULL;                                                                                                                                                             \
         return head;                                                                                                                                                 \
@@ -47,7 +45,6 @@
         }                                                                                                                                                            \
         newNode->compare = head->compare;                                                                                                                            \
         newNode->destroy = head->destroy;                                                                                                                            \
-        newNode->print = head->print;                                                                                                                                \
         newNode->copy = head->copy;                                                                                                                                  \
         if (newNode->copy)                                                                                                                                           \
             newNode->VALUE = newNode->copy(value);                                                                                                                   \
@@ -89,21 +86,20 @@
         return NULL;                                                                                                                                                 \
     }                                                                                                                                                                \
     void type##FreeListMemory(type##_ListNode **head)                                                                                                                 \
-    {                                                                                                                                                                \
+    {                                                                                                                                                  \
         type##_ListNode *tmp;                                                                                                                                        \
-        while (*head != NULL)                                                                                                                                         \
+        while (*head)                                                                                                                                         \
         {                                                                                                                                                            \
             tmp = (*head);                                                                                                                                              \
             (*head) = (*head)->next;                                                                                                                                       \
             /*ici test de "l'existence" de la fonction destroy si elle est pas null                                                                                  \
              cela veut dire que  et VALUE doit etre free et donc on doit appelé destroy*/                                                                            \
-            if (tmp->destroy)                                                                                                                                        \
+            if (tmp->destroy && tmp->VALUE)                                                                                                                                        \
             {                                                                                                                                                        \
-                type val = tmp->VALUE;                                                                                                                               \
-                tmp->destroy((void *)&val);                                                                                                                           \
+                tmp->destroy((void *)&tmp->VALUE);                                                                                                                           \
             }                                                                                                                                                        \
             free(tmp);                                                                                                                                               \
-        }                                                                                                                                                            \
+        }                                                                                                                                                       \
     }
 
 #pragma region List

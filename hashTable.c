@@ -2,57 +2,37 @@
 #include <stdlib.h>
 #include <string.h>
 
-#pragma region HashTables
-typedef struct NodeItem
-{
-    int key;
-    char *data;
-} Item;
+#include"hashTable.h"
 
-typedef struct listHashItem
-{
-    Item *value;
-    struct listHashItem *next;
-    struct listHashItem *tail;
-} ListItem;
-
-typedef struct NodeHashTable
-{
-    ListItem **hashData;
-    int size;
-} HashTable;
-#pragma endregion
-
-void AddAtEndOfListItem(Item *value, ListItem *head)
+int AddAtEndOfListItem(Item *value, ListItem *head)
 {
     ListItem *newNode = (ListItem *)malloc(sizeof(ListItem));
     if (newNode == NULL)
     {
         printf("Unable to allocate memory for new node\n");
+        return 0;
+    }
+    newNode->value = value;
+    newNode->next = NULL;
+
+    if(head->tail)
+    {
+        ListItem *current = head->tail;
+        current->next = newNode;
     }
     else
     {
-        newNode->value = value;
-        newNode->next = NULL;
-
-        if(head->tail)
-        {
-            ListItem *current = head->tail;
-            current->next = newNode;
-        }
-        else
-        {
-            head->next = newNode;
-        }
-        head->tail = newNode;
+        head->next = newNode;
     }
+    head->tail = newNode;
+    return 1;
 }
 
 /// @brief This function is used to get the node from a list based on a parameter value it can also be used to check if a value is inside a list but it's quite to big for only that
 /// @param head the head of the list
 /// @param value the value you want to check if it's inside
 /// @return Returns the node whose value is equal to the parameter if the value is inside else null if it's not
-ListItem *GetListItemNodeFromValue(ListItem *head, char *value, int key)
+ListItem *GetListItemNodeFromValue(ListItem *head, char *value)
 {
     ListItem *searchNode = head->next;
     while (searchNode != NULL)
@@ -132,7 +112,8 @@ unsigned int hash(char *str, int hashSize)
     int sum = 0, lenght = strlen(str);
     for (int i = 0; i < lenght; i++)
     {
-        sum += str[i];
+        char c = /*(str[i] << 5) + */str[i];
+        sum += c + i;
     }
     return sum % hashSize;
 }
@@ -140,23 +121,36 @@ unsigned int hash(char *str, int hashSize)
 void InsertIntoHashTable(char *str, HashTable *table)
 {
     int key = hash(str, table->size);
+    printf("%d: %s\n", key, str);
     Item *newItem = (Item *)malloc(sizeof(Item));
-    if (newItem == NULL)
+    if (!newItem)
     {
         printf("Unable to allocate memory for new item\n");
     }
     else
     {
         newItem->data = strdup(str);
-        newItem->key = key;
-        AddAtEndOfListItem(newItem, table->hashData[key]);
+        if(!newItem->data)
+        {
+            free(newItem);
+            
+        }
+        else
+        {
+            newItem->key = key;
+            if(!AddAtEndOfListItem(newItem, table->hashData[key]))
+            {
+                free(newItem->data);
+                free(newItem);
+            }
+        }
     }
 }
 
 ListItem *GetItemInsideTable(HashTable *table, char *str)
 {
     int key = hash(str, table->size);
-    return GetListItemNodeFromValue(table->hashData[key], str, key);
+    return GetListItemNodeFromValue(table->hashData[key], str);
 }
 
 void DeleteFromHashTable(HashTable *table, char *str)
@@ -172,7 +166,7 @@ void DeleteFromHashTable(HashTable *table, char *str)
             ListItem* tmp = searchNode->next;
             searchNode->next = searchNode->next->next;
             
-            if(table->hashData[key]->tail == tmp) 
+            if(table->hashData[key]->tail == tmp)
                 table->hashData[key]->tail = searchNode;
 
             if(tmp->value)
@@ -182,7 +176,7 @@ void DeleteFromHashTable(HashTable *table, char *str)
             }
             free(tmp);
             break;
-        }
-        searchNode = searchNode->next;
+        }                                                                                                                                                                                                                                                              
+        searchNode = searchNode->next;                                                                                                                                                                                                                                  
     }
 }
